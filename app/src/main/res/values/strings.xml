@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Julia</string>
+    <string name="title_setting">Настройки</string>
+    <string name="title_training">Тренировка</string>
+    <string name="title_collections">Коллекции</string>
+    <string name="btn_add_card">Добавить информацию</string>
+    <string name="emptyCollections_text">У вас нет коллекций</string>
+    <string name="emptyCards_text">В этой коллекции нет карт. Вы можете добавить.</string>
+    <string name="btn_save_card">Сохранить</string>
+    <string name="textfield_title">Название карточки</string>
+    <string name="textfield_content">Основная информация</string>
+    <string name="addCardScreenTitle">Добавить новую карту</string>
+    <string name="allCardsScreemTitle">Список ваших карт</string>
+    <string name="allCollectionsScreemTitle">Список ваших коллекций</string>
+</resources>
