@@ -10,7 +10,7 @@ import androidx.navigation.navArgument
 import com.github.zhirnoov.julia.presentation.bottom_nav.BottomNavigationItem
 import com.github.zhirnoov.julia.presentation.screens.cards.CardsScreen
 import com.github.zhirnoov.julia.presentation.screens.collections.CollectionsScreen
-import com.github.zhirnoov.julia.presentation.screens.training.settings.SettingsScreen
+import com.github.zhirnoov.julia.presentation.screens.settings.SettingsScreen
 import com.github.zhirnoov.julia.presentation.screens.training.TrainingScreen
 import com.github.zhirnoov.julia.presentation.viewmodels.CardViewModel
 import com.github.zhirnoov.julia.presentation.viewmodels.CollectionViewModel

@@ -1,4 +1,4 @@
-package com.github.zhirnoov.julia.presentation.screens.training.settings
+package com.github.zhirnoov.julia.presentation.screens.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
