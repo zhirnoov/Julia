@@ -9,21 +9,24 @@ import java.util.*
 
 class AlarmHelper {
 
-    fun setAlarm(context: Context) {
+    fun setAlarm(context: Context, day : Int, minute : Int, hour : Int) {
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val receiver = Intent(context, AlarmReceiver::class.java)
         val pendingIntent =
             PendingIntent.getBroadcast(context, 0, receiver, PendingIntent.FLAG_UPDATE_CURRENT)
         val calendar = Calendar.getInstance().apply {
-            timeInMillis = System.currentTimeMillis() + 10000
+            timeInMillis = System.currentTimeMillis()
+            set(Calendar.DAY_OF_YEAR, day)
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
         }
+        Log.d("JuliaTest", "Установил оповещение ${Date()}")
         alarmManager.setAlarmClock(
             AlarmManager.AlarmClockInfo(
                 calendar.timeInMillis,
                 pendingIntent
             ), pendingIntent
         )
-        Log.d("JuliaTest", "Установил оповещение ${Date()}")
     }
 }

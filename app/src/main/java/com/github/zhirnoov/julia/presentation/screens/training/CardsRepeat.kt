@@ -1,5 +1,7 @@
 package com.github.zhirnoov.julia.presentation.screens.training
 
+import com.github.zhirnoov.julia.utlis.NotificationHelper
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,16 +10,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.github.zhirnoov.julia.data.alarmManager.AlarmHelper
 import com.github.zhirnoov.julia.data.database.entity.CardEntity
 import com.github.zhirnoov.julia.presentation.components.CardFace
 import com.github.zhirnoov.julia.presentation.components.CardFlip
 import com.github.zhirnoov.julia.presentation.viewmodels.TrainingViewModel
 import com.github.zhirnoov.julia.utlis.StageRepeat
+import java.util.*
 
 @Composable
 fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel) {
+    Log.d("JuliaTest", "OnCardsRepeat ${Date()}")
 
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -37,7 +44,7 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(text = "${cardCount+1}/${cards.size}")
+                Text(text = "${cardCount + 1}/${cards.size}")
                 CardFlip(cardFace = cardFace,
                     onClick = { cardFace = cardFace.next },
                     modifier = Modifier
@@ -82,6 +89,8 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel) {
                                 id = cards[cardCount].id,
                                 stage_repeat = cards[cardCount].stage_repeat + 1
                             )
+                            NotificationHelper().showNotification(context)
+
                             cardCount++
                         }) { Text(text = "Знаю") }
 
@@ -92,6 +101,12 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel) {
                                 next_repeatDays = cards[cardCount].next_repeat_dayOfYear + 1,
                                 id = cards[cardCount].id,
                                 stage_repeat = cards[cardCount].stage_repeat
+                            )
+                            AlarmHelper().setAlarm(
+                                context = context,
+                                day = cards[cardCount].next_repeat_dayOfYear,
+                                minute = Calendar.getInstance().get(Calendar.MINUTE),
+                                hour = Calendar.getInstance().get(Calendar.HOUR)
                             )
                             cardCount++
                         }) { Text(text = "Не знаю") }
