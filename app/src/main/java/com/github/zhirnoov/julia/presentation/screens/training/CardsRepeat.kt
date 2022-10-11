@@ -89,8 +89,12 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel) {
                                 id = cards[cardCount].id,
                                 stage_repeat = cards[cardCount].stage_repeat + 1
                             )
-                            NotificationHelper().showNotification(context)
-
+                            AlarmHelper().setAlarm(
+                                context, StageRepeat().changeDayForNextRepeat(
+                                    currentDay = cards[cardCount].next_repeat_dayOfYear,
+                                    repeatStage = cards[cardCount].stage_repeat
+                                )
+                            )
                             cardCount++
                         }) { Text(text = "Знаю") }
 
@@ -101,12 +105,6 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel) {
                                 next_repeatDays = cards[cardCount].next_repeat_dayOfYear + 1,
                                 id = cards[cardCount].id,
                                 stage_repeat = cards[cardCount].stage_repeat
-                            )
-                            AlarmHelper().setAlarm(
-                                context = context,
-                                day = cards[cardCount].next_repeat_dayOfYear,
-                                minute = Calendar.getInstance().get(Calendar.MINUTE),
-                                hour = Calendar.getInstance().get(Calendar.HOUR)
                             )
                             cardCount++
                         }) { Text(text = "Не знаю") }
