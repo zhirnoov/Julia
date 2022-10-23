@@ -6,11 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.github.zhirnoov.julia.data.database.entity.CardEntity
 import com.github.zhirnoov.julia.domain.UIStateCards
 import com.github.zhirnoov.julia.domain.usecases.DeleteCardUseCase
+import com.github.zhirnoov.julia.domain.usecases.EditCardUseCase
 import com.github.zhirnoov.julia.domain.usecases.GetCardsUseCase
 import com.github.zhirnoov.julia.domain.usecases.SaveCardUseCase
+import com.github.zhirnoov.julia.domain.usecases.collection.UpdateCountCardInCollectionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,38 +19,53 @@ import javax.inject.Inject
 class CardViewModel @Inject constructor(
     private val saveCardUseCase: SaveCardUseCase,
     private val getCardsUseCase: GetCardsUseCase,
-    private val deleteCardUseCase: DeleteCardUseCase
+    private val deleteCardUseCase: DeleteCardUseCase,
+    private val updateCountCardInCollectionUseCase: UpdateCountCardInCollectionUseCase,
+    private val editCardUseCase: EditCardUseCase
 ) : ViewModel() {
 
     var cards = mutableStateListOf<CardEntity>()
     private val _uiState = MutableStateFlow<UIStateCards>(UIStateCards.Loading)
     val uiState = _uiState.asStateFlow()
 
-    fun getAllCards(collectionId : String) =
+      fun getAllCards(collectionId: String) =
         viewModelScope.launch {
             getCardsUseCase.execute(collectionId = collectionId).collect {
                 if (it.isEmpty()) {
                     _uiState.value = UIStateCards.Error
                 } else {
+                    cards.clear()
                     cards.addAll(it)
                     _uiState.value = UIStateCards.Success(cards)
                 }
             }
         }
 
-        fun saveCard(card: CardEntity) = viewModelScope.launch {
-            saveCardUseCase.execute(card)
-            cards.add(card)
-            if (cards.isNotEmpty()) {
-                _uiState.value = UIStateCards.Success(cards)
-            }
-        }
-
-        fun deleteCard(card: CardEntity) = viewModelScope.launch {
-            cards.remove(card)
-            deleteCardUseCase.execute(card)
-            if (cards.isEmpty()) {
-                _uiState.value = UIStateCards.Error
-            }
+    fun saveCard(card: CardEntity) = viewModelScope.launch {
+        saveCardUseCase.execute(card)
+        cards.add(card)
+        if (cards.isNotEmpty()) {
+            _uiState.value = UIStateCards.Success(cards)
         }
     }
+
+    fun deleteCard(card: CardEntity) = viewModelScope.launch {
+        cards.remove(card)
+        deleteCardUseCase.execute(card)
+        if (cards.isEmpty()) {
+            _uiState.value = UIStateCards.Error
+        }
+    }
+
+    fun updateCountCardsInCollection(countCards: Int, id: String) {
+        viewModelScope.launch {
+            updateCountCardInCollectionUseCase.execute(countCards = countCards, id = id)
+        }
+    }
+
+    fun editCard(mainSide : String, backSide : String, id : String) {
+        viewModelScope.launch {
+            editCardUseCase.execute(mainSide = mainSide, backSide = backSide, id = id)
+        }
+    }
+}

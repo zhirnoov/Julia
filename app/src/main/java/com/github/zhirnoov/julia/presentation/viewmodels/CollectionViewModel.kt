@@ -11,7 +11,9 @@ import com.github.zhirnoov.julia.domain.UIState
 import com.github.zhirnoov.julia.domain.usecases.collection.AddCollectionUseCase
 import com.github.zhirnoov.julia.domain.usecases.collection.DeleteCollectionUseCase
 import com.github.zhirnoov.julia.domain.usecases.collection.GetAllCollectionsUseCase
+import com.github.zhirnoov.julia.domain.usecases.collection.GetCardCountInCollectionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -28,12 +30,27 @@ class CollectionViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UIState>(UIState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    init {
+    /*init {
         viewModelScope.launch {
             getAllCollectionsUseCase.execute().collect {
                 if (it.isEmpty()) {
                     _uiState.value = UIState.Error
                 } else {
+                    collections.clear()
+                    collections.addAll(it)
+                    _uiState.value = UIState.Success(collections)
+                }
+            }
+        }
+    }*/
+
+    fun getAllCollections() {
+        viewModelScope.launch {
+            getAllCollectionsUseCase.execute().collect {
+                if (it.isEmpty()) {
+                    _uiState.value = UIState.Error
+                } else {
+                    collections.clear()
                     collections.addAll(it)
                     _uiState.value = UIState.Success(collections)
                 }
@@ -57,4 +74,9 @@ class CollectionViewModel @Inject constructor(
             _uiState.value = UIState.Error
         }
     }
+
+/*    suspend fun getCardCountInCollection(collectionId: String) = viewModelScope.launch {
+        _cardCount.value = getCardCountInCollectionUseCase.execute(collectionId = collectionId)
+    }*/
+
 }

@@ -67,10 +67,9 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
 
 
-    //Navigation
-    def nav_version = "2.5.2"
-    implementation "androidx.navigation:navigation-compose:$nav_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
+   //Voyager
+    implementation "cafe.adriel.voyager:voyager-navigator:1.0.0-rc02"
+    implementation "cafe.adriel.voyager:voyager-tab-navigator:1.0.0-rc02"
 
     //Hilt
     def hilt_version = "2.44"

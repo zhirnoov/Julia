@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.github.zhirnoov.julia.data.database.entity.CollectionEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -19,4 +20,7 @@ interface CollectionDao {
 
     @Delete
     suspend fun deleteCollection(collection : CollectionEntity)
+
+    @Query("UPDATE collections set countCards =:countCards WHERE id =:id")
+    suspend fun updateCollection(countCards : Int, id : String)
 }

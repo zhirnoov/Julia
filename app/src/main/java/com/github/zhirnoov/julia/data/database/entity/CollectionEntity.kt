@@ -8,5 +8,6 @@ import java.util.*
 data class CollectionEntity(
     @PrimaryKey
     val id: String = UUID.randomUUID().toString(),
-    val name: String
+    val name: String,
+    val countCards : Int = 0,
 )

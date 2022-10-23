@@ -5,11 +5,14 @@
     <string name="title_collections">Коллекции</string>
     <string name="btn_add_card">Добавить информацию</string>
     <string name="emptyCollections_text">У вас нет коллекций</string>
-    <string name="emptyCards_text">В этой коллекции нет карт. Вы можете добавить.</string>
+    <string name="emptyCards_text">В этой коллекции нет карт.</string>
+    <string name="emptyTraining_text">У вас нет карт для повторения</string>
     <string name="btn_save_card">Сохранить</string>
     <string name="textfield_title">Название карточки</string>
     <string name="textfield_content">Основная информация</string>
     <string name="addCardScreenTitle">Добавить новую карту</string>
     <string name="allCardsScreemTitle">Список ваших карт</string>
     <string name="allCollectionsScreemTitle">Список ваших коллекций</string>
+    <string name="emptyCollectionsContent_text">Вы можете создать вашу первую коллекцию</string>
+    <string name="emptyСardsContent_text">Вы можете добавить карту</string>
 </resources>

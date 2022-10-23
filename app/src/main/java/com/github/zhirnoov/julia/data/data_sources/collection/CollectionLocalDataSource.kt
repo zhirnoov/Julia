@@ -16,4 +16,8 @@ class CollectionLocalDataSource @Inject constructor(private val collectionDao: C
         collectionDao.deleteCollection(collection)
     }
 
+    suspend fun updateCollection(countCards : Int, id : String) {
+        collectionDao.updateCollection(countCards = countCards, id = id)
+    }
+
 }

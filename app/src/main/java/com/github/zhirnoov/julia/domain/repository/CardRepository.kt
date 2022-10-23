@@ -13,5 +13,9 @@ interface CardRepository {
 
     suspend fun getCardsForRepeat(startDay : Int, endDay : Int) : Flow<List<CardEntity>>
 
-    suspend fun updateCard(next_repeatDays : Int, id : Int, stage_repeat: Int)
+    suspend fun updateCard(next_repeatDays: Int, id: String, stage_repeat: Int)
+
+    suspend fun editCard(mainSide : String, backSide : String, id : String)
+
+    suspend fun getCardCountInCollection(collectionId : String) : Int
 }

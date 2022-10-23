@@ -1,3 +1,4 @@
+/*
 package com.github.zhirnoov.julia.presentation.bottom_nav
 
 import com.github.zhirnoov.julia.R
@@ -23,4 +24,4 @@ sealed class BottomNavigationItem(
         title = R.string.title_setting,
         icon = R.drawable.icon_settings
     )
-}
+}*/

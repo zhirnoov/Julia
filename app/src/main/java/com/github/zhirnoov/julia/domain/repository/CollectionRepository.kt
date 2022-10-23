@@ -11,4 +11,6 @@ interface CollectionRepository {
 
     suspend fun deleteCollection(collection : CollectionEntity)
 
+    suspend fun updateCollection(countCards : Int, id : String)
+
 }

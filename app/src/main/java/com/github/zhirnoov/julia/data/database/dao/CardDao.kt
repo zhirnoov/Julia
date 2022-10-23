@@ -12,13 +12,19 @@ interface CardDao {
     suspend fun saveCard(cardEntity: CardEntity)
 
     @Query("UPDATE cards SET next_repeat_dayOfYear =:next_repeat_dayOfYear, stage_repeat =:stage_repeat WHERE id =:id")
-    suspend fun updateCard(next_repeat_dayOfYear: Int, id: Int, stage_repeat: Int)
+    suspend fun updateCard(next_repeat_dayOfYear: Int, id: String, stage_repeat: Int)
 
     @Query("SELECT * FROM cards WHERE collectionId =:collectionId")
     fun getCards(collectionId : String): Flow<List<CardEntity>>
 
+    @Query("SELECT COUNT(*) FROM cards WHERE collectionId =:collectionId")
+    fun getCardsCountInCollection(collectionId: String) : Int
+
     @Delete
     suspend fun deleteCard(cardEntity: CardEntity)
+
+    @Query("UPDATE cards SET MainSide =:mainSide, BackSide =:backSide WHERE id=:id")
+    suspend fun editCard(mainSide : String, backSide : String, id: String)
 
     @Query("SELECT * FROM cards WHERE next_repeat_dayOfYear BETWEEN :startDay AND :endDay")
     fun getCardsForRepeat(startDay: Int, endDay : Int): Flow<List<CardEntity>>

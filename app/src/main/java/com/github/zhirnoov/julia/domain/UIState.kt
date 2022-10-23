@@ -16,3 +16,9 @@ sealed class UIStateCards {
     object Error : UIStateCards()
     data class Success(val cards: SnapshotStateList<CardEntity>) : UIStateCards()
 }
+
+sealed class UIStateTraining {
+    object Loading : UIStateTraining()
+    object Error : UIStateTraining()
+    data class Success(val cards: SnapshotStateList<CardEntity>) : UIStateTraining()
+}

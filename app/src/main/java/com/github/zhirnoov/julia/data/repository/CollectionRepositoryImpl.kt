@@ -24,4 +24,10 @@ class CollectionRepositoryImpl(private val collectionLocalDataSource: Collection
             collectionLocalDataSource.deleteCollection(collection)
         }
     }
+
+    override suspend fun updateCollection(countCards: Int, id: String) {
+        withContext(Dispatchers.IO) {
+            collectionLocalDataSource.updateCollection(countCards = countCards, id = id)
+        }
+    }
 }

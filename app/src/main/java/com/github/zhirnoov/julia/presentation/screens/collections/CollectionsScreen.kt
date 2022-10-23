@@ -12,13 +12,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import com.github.zhirnoov.julia.R
 import com.github.zhirnoov.julia.data.database.entity.CollectionEntity
 import com.github.zhirnoov.julia.domain.UIState
 import com.github.zhirnoov.julia.presentation.screens.LoadingProcess
@@ -28,8 +26,12 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CollectionsScreen(
-    viewModel: CollectionViewModel = viewModel(), navController: NavHostController
+    viewModel: CollectionViewModel = viewModel()
 ) {
+
+    LaunchedEffect(Unit) {
+        viewModel.getAllCollections()
+    }
 
     val state = viewModel.uiState.collectAsState().value
     val bottomState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
@@ -40,11 +42,14 @@ fun CollectionsScreen(
         sheetElevation = 4.dp,
         sheetContent = {
             var collectionName by remember { mutableStateOf("") }
+            var buttonIsEnabled by remember { mutableStateOf(false) }
+
+            buttonIsEnabled = collectionName.isNotBlank()
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 6.dp),
+                    .padding(start = 16.dp, end = 16.dp, top = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
@@ -67,12 +72,21 @@ fun CollectionsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 10.dp),
+                    .padding(start = 16.dp, end = 16.dp, top = 4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Text(
+                    text = "Введите название для коллекции",
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.W400,
+                    color = Color.LightGray
+                )
+
+
                 TextField(modifier = Modifier
+                    .padding(top = 20.dp)
                     .height(60.dp)
-                    .padding(top = 6.dp)
                     .fillMaxWidth(),
                     colors = TextFieldDefaults.textFieldColors(
                         focusedIndicatorColor = Color.Transparent,
@@ -88,32 +102,37 @@ fun CollectionsScreen(
                 Button(modifier = Modifier
                     .padding(top = 10.dp, bottom = 16.dp)
                     .height(60.dp)
-                    .fillMaxWidth(), shape = RoundedCornerShape(10.dp), onClick = {
-                    scope.launch {
-                        bottomState.hide()
-                    }
-                    val collection = CollectionEntity(name = collectionName)
-                    viewModel.addCollection(collection)
-                    // collectionName = ""
-                }) { Text(text = "Сохранить") }
+                    .fillMaxWidth(), shape = RoundedCornerShape(10.dp),
+                    enabled = buttonIsEnabled,
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color(0xFF03A9F4),
+                        disabledBackgroundColor = Color.LightGray
+                    ),
+                    onClick = {
+                        scope.launch {
+                            bottomState.hide()
+                        }
+                        val collection = CollectionEntity(name = collectionName)
+                        viewModel.addCollection(collection)
+                        collectionName = ""
+                    }) { Text(text = "Сохранить", color = Color.White) }
 
             }
         }) {
-        Scaffold(topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(R.string.allCollectionsScreemTitle)) },
-                backgroundColor = MaterialTheme.colors.primary,
-                contentColor = Color.White,
-                elevation = 10.dp
-            )
-        },
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    backgroundColor = Color(0xFF0277BD),
+                    title = { Text(text = "Коллекции", color = Color.White) })
+            },
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
                         scope.launch {
                             bottomState.show()
                         }
-                    }, shape = RoundedCornerShape(50), backgroundColor = Color(0xFFFFeb3b)
+                    }, shape = RoundedCornerShape(50), backgroundColor = Color(0xFF03A9F4),
+                    contentColor = Color.White
                 ) {
                     Icon(imageVector = Icons.Filled.Add, contentDescription = "fab button")
                 }
@@ -121,14 +140,19 @@ fun CollectionsScreen(
             floatingActionButtonPosition = FabPosition.Center,
             isFloatingActionButtonDocked = false,
             content = { padding ->
-                when (state) {
-                    is UIState.Loading -> LoadingProcess()
-                    is UIState.Error -> EmptyCollectionsMessage()
-                    is UIState.Success -> AllCollections(padding = padding,
-                        collections = state.collections,
-                        onCardsInCollection = { collection ->
-                            navController.navigate("collection/${collection.id}")
-                        })
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    when (state) {
+                        is UIState.Loading -> LoadingProcess()
+                        is UIState.Error -> EmptyCollectionsMessage()
+                        is UIState.Success -> AllCollections(
+                            padding = padding,
+                            collections = state.collections
+                        )
+                    }
                 }
             })
     }

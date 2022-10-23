@@ -1,51 +1,60 @@
 package com.github.zhirnoov.julia.presentation.screens.cards
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.github.zhirnoov.julia.data.database.entity.CardEntity
 import com.github.zhirnoov.julia.domain.UIStateCards
 import com.github.zhirnoov.julia.presentation.screens.LoadingProcess
 import com.github.zhirnoov.julia.presentation.viewmodels.CardViewModel
 import kotlinx.coroutines.launch
+import androidx.lifecycle.viewmodel.compose.viewModel
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import java.util.*
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun CardsScreen(viewModel: CardViewModel = viewModel(), collectionId: String?) {
+fun CardsScreen(
+    viewModel: CardViewModel = viewModel(),
+    collectionName: String?,
+    collectionId: String?,
+    cardsCount: Int?
+) {
 
-    Log.d("JuliaTesting", "collectionID = $collectionId")
 
     LaunchedEffect(Unit) {
-        viewModel.getAllCards(collectionId = collectionId!!)
+        viewModel.getAllCards(collectionId!!)
     }
+    val state = viewModel.uiState.collectAsState()
 
-    Log.d("JuliaTesting", "collectionID = $collectionId")
-
-    val state = viewModel.uiState.collectAsState().value
     val bottomState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
+    var cardMainSide by remember { mutableStateOf("") }
+    var cardBackSide by remember { mutableStateOf("") }
+    var cardsCount by rememberSaveable { mutableStateOf(cardsCount!!) }
+    var buttonIsEnabled by remember { mutableStateOf(false) }
+    val navigator = LocalNavigator.currentOrThrow
 
     ModalBottomSheetLayout(sheetState = bottomState,
         sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         sheetElevation = 4.dp,
         sheetContent = {
-
-            var cardMainSide by remember { mutableStateOf("") }
-            var cardBackSide by remember { mutableStateOf("") }
+            buttonIsEnabled = !(cardMainSide.isBlank() || cardBackSide.isBlank())
 
             Row(
                 modifier = Modifier
@@ -106,47 +115,80 @@ fun CardsScreen(viewModel: CardViewModel = viewModel(), collectionId: String?) {
                 Button(modifier = Modifier
                     .padding(top = 10.dp, bottom = 16.dp)
                     .height(60.dp)
-                    .fillMaxWidth(), shape = RoundedCornerShape(10.dp), onClick = {
-                    val calendar = Calendar.getInstance()
-                    viewModel.saveCard(
-                        card = CardEntity(
-                            id = 0,
-                            collectionId = collectionId!!,
-                            MainSide = cardMainSide,
-                            BackSide = cardBackSide,
-                            stage_repeat = 1,
-                            next_repeat_dayOfYear = calendar.get(Calendar.DAY_OF_YEAR)
+                    .fillMaxWidth(),
+                    shape = RoundedCornerShape(10.dp),
+                    enabled = buttonIsEnabled,
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color(0xFF03A9F4),
+                        disabledBackgroundColor = Color.LightGray
+                    ),
+                    onClick = {
+                        val calendar = Calendar.getInstance()
+                        viewModel.saveCard(
+                            card = CardEntity(
+                                collectionId = collectionId!!,
+                                MainSide = cardMainSide,
+                                BackSide = cardBackSide,
+                                stage_repeat = 1,
+                                next_repeat_dayOfYear = calendar.get(Calendar.DAY_OF_YEAR)
+                            )
                         )
-                    )
-                    scope.launch {
-                        bottomState.hide()
-                    }
-                    cardBackSide = ""
-                    cardBackSide = ""
+                        cardsCount += 1
+                        viewModel.updateCountCardsInCollection(
+                            id = collectionId,
+                            countCards = cardsCount
+                        )
+                        scope.launch {
+                            bottomState.hide()
+                        }
+                        cardMainSide = ""
+                        cardBackSide = ""
 
-                }) { Text(text = "Сохранить") }
+                    }) { Text(text = "Сохранить", color = Color.White) }
             }
         }) {
-        Scaffold(floatingActionButton = {
+        Scaffold(topBar = {
+            TopAppBar(backgroundColor = Color(0xFF0277BD),
+                title = { Text(text = collectionName!!, color = Color.White) },
+                navigationIcon = {
+                    IconButton(onClick = { navigator.pop() }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "button back",
+                            tint = Color.White
+                        )
+                    }
+                })
+        }, floatingActionButton = {
             FloatingActionButton(
                 onClick = {
                     scope.launch {
                         bottomState.show()
                     }
-                }, shape = RoundedCornerShape(50), backgroundColor = Color(0xFFFFeb3b)
+                }, shape = RoundedCornerShape(50), backgroundColor = Color(0xFF03A9F4),
+                contentColor = Color.White
             ) {
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "fab button")
             }
-        }, content = { padding ->
-            when (state) {
-                is UIStateCards.Loading -> LoadingProcess()
-                is UIStateCards.Error -> EmptyCardsMessage()
-                is UIStateCards.Success -> AllCards(padding = padding,
-                    cards = state.cards,
-                    deleteCard = { card ->
-                        viewModel.deleteCard(card)
-                    })
-            }
-        })
+        },
+            floatingActionButtonPosition = FabPosition.Center,
+            isFloatingActionButtonDocked = false,
+            content = { padding ->
+                when (state.value) {
+                    is UIStateCards.Loading -> LoadingProcess()
+                    is UIStateCards.Error -> EmptyCardsMessage()
+                    is UIStateCards.Success -> AllCards(
+                        padding = padding,
+                        cards = (state.value as UIStateCards.Success).cards,
+                        deleteCard = { card ->
+                            viewModel.deleteCard(card)
+                            cardsCount -= 1
+                            viewModel.updateCountCardsInCollection(
+                                id = collectionId!!,
+                                countCards = cardsCount
+                            )
+                        })
+                }
+            })
     }
 }
