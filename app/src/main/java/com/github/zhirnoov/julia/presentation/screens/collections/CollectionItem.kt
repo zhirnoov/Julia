@@ -14,6 +14,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -62,11 +63,13 @@ fun CollectionItem(
         ) {
 
             Text(
-                text = collection.name, fontSize = 20.sp, fontWeight = FontWeight.W500
+                text = collection.name, fontSize = 20.sp, fontWeight = FontWeight.W500,
+                textAlign = TextAlign.Start
             )
             Text(
                 text = setCountCardsTitle(countCards = collection.countCards),
                 fontSize = 16.sp,
+                textAlign = TextAlign.Start,
                 fontWeight = FontWeight.W400,
                 color = Color.Gray
             )

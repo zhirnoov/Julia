@@ -21,6 +21,8 @@ import com.github.zhirnoov.julia.data.database.entity.CollectionEntity
 import com.github.zhirnoov.julia.domain.UIState
 import com.github.zhirnoov.julia.presentation.screens.LoadingProcess
 import com.github.zhirnoov.julia.presentation.viewmodels.CollectionViewModel
+import com.github.zhirnoov.julia.utlis.RememberWindowInfo
+import com.github.zhirnoov.julia.utlis.WindowInfo
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)

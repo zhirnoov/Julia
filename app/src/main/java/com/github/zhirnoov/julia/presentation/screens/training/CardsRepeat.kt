@@ -1,11 +1,13 @@
 package com.github.zhirnoov.julia.presentation.screens.training
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -14,11 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
+import com.github.zhirnoov.julia.R
 import com.github.zhirnoov.julia.data.alarmManager.AlarmHelper
 import com.github.zhirnoov.julia.data.database.entity.CardEntity
 import com.github.zhirnoov.julia.navigation.screens.CollectionsScreenNav
@@ -26,12 +31,16 @@ import com.github.zhirnoov.julia.navigation.tabs.CollectionsTab
 import com.github.zhirnoov.julia.presentation.components.CardFace
 import com.github.zhirnoov.julia.presentation.components.CardFlip
 import com.github.zhirnoov.julia.presentation.viewmodels.TrainingViewModel
+import com.github.zhirnoov.julia.utlis.RememberWindowInfo
 import com.github.zhirnoov.julia.utlis.StageRepeat
+import com.github.zhirnoov.julia.utlis.WindowInfo
 import java.util.*
 
 @Composable
 fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel, padding: PaddingValues) {
     Log.d("JuliaTest", "OnCardsRepeat ${Date()}")
+
+    val windowInfo = RememberWindowInfo()
 
     val context = LocalContext.current
     Column(
@@ -39,7 +48,7 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel, padding: 
             .fillMaxSize()
             .padding(start = 16.dp, end = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
         var cardCount by remember { mutableStateOf(0) }
 
@@ -48,21 +57,26 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel, padding: 
                 mutableStateOf(CardFace.FrontSide)
             }
 
+            Text(
+                modifier = Modifier.padding(top = 20.dp),
+                text = "${cardCount + 1}/${cards.size}",
+                fontWeight = FontWeight.W500
+            )
+            IndicatorProgress(
+                modifier = Modifier.padding(top = 10.dp),
+                progress = (cardCount + 1.toFloat() / cards.size) / 1
+            )
+
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-
-                Text(text = "${cardCount + 1}/${cards.size}", fontWeight = FontWeight.Bold)
-
-                IndicatorProgress(progress = (cardCount.toFloat() / cards.size) / 1)
-
                 CardFlip(cardFace = cardFace,
                     onClick = { cardFace = cardFace.next },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp)
+                        .height(if (windowInfo.screenWidthInfo is WindowInfo.WindowType.Compact) 300.dp else 400.dp)
                         .padding(top = 10.dp),
                     front = {
                         Box(
@@ -93,6 +107,9 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel, padding: 
                 ) {
                     Button(modifier = Modifier.size(width = 120.dp, height = 50.dp),
                         shape = RoundedCornerShape(20.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color(0xFF03A9F4),
+                        ),
                         onClick = {
                             viewModel.updateCard(
                                 next_repeatDays = StageRepeat().changeDayForNextRepeat(
@@ -109,10 +126,13 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel, padding: 
                                 )
                             )
                             cardCount++
-                        }) { Text(text = "Знаю") }
+                        }) { Text(text = "Знаю", color = Color.White) }
 
                     Button(modifier = Modifier.size(width = 120.dp, height = 50.dp),
                         shape = RoundedCornerShape(20.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color(0xFFD32F2F),
+                        ),
                         onClick = {
                             viewModel.updateCard(
                                 next_repeatDays = cards[cardCount].next_repeat_dayOfYear + 1,
@@ -125,7 +145,7 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel, padding: 
                                 cards[cardCount].next_repeat_dayOfYear + 1
                             )
                             cardCount++
-                        }) { Text(text = "Не знаю") }
+                        }) { Text(text = "Не знаю", color = Color.White) }
                 }
             }
 
@@ -143,33 +163,44 @@ fun FinishTrainingMessage() {
         verticalArrangement = Arrangement.Center
     ) {
         val navigationTab = LocalTabNavigator.current
-        Text(text = "Поздравляем!")
-        Text(modifier = Modifier.padding(top = 4.dp), text = "Вы завершили тренировку")
-        Button(
-            modifier = Modifier.padding(top = 10.dp),
-            onClick = {
-                navigationTab.current = CollectionsTab
-            }) {
-            Text(text = "Вернуться")
-        }
+        val windowInfo = RememberWindowInfo()
+        Image(
+            modifier = Modifier.size(if (windowInfo.screenWidthInfo is WindowInfo.WindowType.Compact) 200.dp else 250.dp),
+            painter = painterResource(R.drawable.finish_training_img),
+            contentDescription = "finish training image"
+        )
+        Text(
+            modifier = Modifier.padding(top = 40.dp), text = "Поздравляем!",
+            fontWeight = FontWeight.W500,
+            fontSize = if (windowInfo.screenWidthInfo is WindowInfo.WindowType.Compact) 20.sp else 24.sp
+        )
+        Text(
+            modifier = Modifier.padding(top = 6.dp), text = "Вы завершили тренировку",
+            fontWeight = FontWeight.W300,
+            fontSize = if (windowInfo.screenWidthInfo is WindowInfo.WindowType.Compact) 14.sp else 18.sp
+        )
     }
 }
 
 
 @Composable
-fun IndicatorProgress(progress: Float) {
-    BoxWithConstraints(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(CircleShape)
-            .background(Color.LightGray)
-    ) {
-        Spacer(
+fun IndicatorProgress(modifier: Modifier, progress: Float) {
+
+    Column(modifier = modifier) {
+        BoxWithConstraints(
             modifier = Modifier
-                .height(14.dp)
-                .fillMaxWidth(progress)
+                .fillMaxWidth()
                 .clip(CircleShape)
-                .background(Color(0xffFFA000))
-        )
+                .background(Color.LightGray)
+        ) {
+            Spacer(
+                modifier = Modifier
+                    .height(14.dp)
+                    .fillMaxWidth(progress)
+                    .clip(CircleShape)
+                    .background(Color(0xffFFA000))
+            )
+        }
     }
+
 }
