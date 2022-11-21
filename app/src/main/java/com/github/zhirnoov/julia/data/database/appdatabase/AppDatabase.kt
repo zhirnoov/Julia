@@ -9,10 +9,12 @@ import com.github.zhirnoov.julia.data.database.entity.CollectionEntity
 
 @Database(
     version = 1,
-    entities = [CardEntity::class, CollectionEntity::class]
+    entities = [CardEntity::class,
+        CollectionEntity::class
+    ]
 )
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun cardDao() : CardDao
-    abstract fun collectionDao() : CollectionDao
+    abstract fun cardDao(): CardDao
+    abstract fun collectionDao(): CollectionDao
 }

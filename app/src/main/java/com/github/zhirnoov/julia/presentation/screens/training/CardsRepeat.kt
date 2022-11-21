@@ -187,7 +187,7 @@ fun FinishTrainingMessage() {
 fun IndicatorProgress(modifier: Modifier, progress: Float) {
 
     Column(modifier = modifier) {
-        BoxWithConstraints(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(CircleShape)

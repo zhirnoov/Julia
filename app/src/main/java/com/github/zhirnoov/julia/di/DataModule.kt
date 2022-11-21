@@ -11,7 +11,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-class DataModule {
+class DataModule() {
 
     @Provides
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
@@ -26,4 +26,7 @@ class DataModule {
 
     @Provides
     fun provideCollectionDao(db : AppDatabase) = db.collectionDao()
+
+    @Provides
+    fun provideContext(@ApplicationContext context: Context) = context
 }

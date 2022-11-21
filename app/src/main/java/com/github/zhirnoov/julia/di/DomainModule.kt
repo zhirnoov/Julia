@@ -25,4 +25,5 @@ class DomainModule {
     fun provideCollectionRepository(collectionLocalDataSource: CollectionLocalDataSource): CollectionRepository {
         return CollectionRepositoryImpl(collectionLocalDataSource = collectionLocalDataSource)
     }
+
 }

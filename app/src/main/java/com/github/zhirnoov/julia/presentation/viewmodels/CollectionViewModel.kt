@@ -30,20 +30,6 @@ class CollectionViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UIState>(UIState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    /*init {
-        viewModelScope.launch {
-            getAllCollectionsUseCase.execute().collect {
-                if (it.isEmpty()) {
-                    _uiState.value = UIState.Error
-                } else {
-                    collections.clear()
-                    collections.addAll(it)
-                    _uiState.value = UIState.Success(collections)
-                }
-            }
-        }
-    }*/
-
     fun getAllCollections() {
         viewModelScope.launch {
             getAllCollectionsUseCase.execute().collect {
@@ -74,9 +60,5 @@ class CollectionViewModel @Inject constructor(
             _uiState.value = UIState.Error
         }
     }
-
-/*    suspend fun getCardCountInCollection(collectionId: String) = viewModelScope.launch {
-        _cardCount.value = getCardCountInCollectionUseCase.execute(collectionId = collectionId)
-    }*/
 
 }
