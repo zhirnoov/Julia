@@ -56,6 +56,8 @@ fun EditCardScreen(
                 .fillMaxWidth(),
                 colors = TextFieldDefaults.textFieldColors(
                     focusedIndicatorColor = Color.Transparent,
+                    textColor = Color.Black,
+                    backgroundColor = Color.LightGray,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent
                 ),
@@ -71,6 +73,8 @@ fun EditCardScreen(
                 .fillMaxWidth(),
                 colors = TextFieldDefaults.textFieldColors(
                     focusedIndicatorColor = Color.Transparent,
+                    textColor = Color.Black,
+                    backgroundColor = Color.LightGray,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent
                 ),

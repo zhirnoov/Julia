@@ -38,7 +38,6 @@ import java.util.*
 
 @Composable
 fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel, padding: PaddingValues) {
-    Log.d("JuliaTest", "OnCardsRepeat ${Date()}")
 
     val windowInfo = RememberWindowInfo()
 

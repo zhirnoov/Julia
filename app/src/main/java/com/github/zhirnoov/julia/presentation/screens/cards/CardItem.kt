@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -42,6 +43,7 @@ fun CardItem(card: CardEntity, deleteCard: () -> Unit) {
                 text = card.MainSide,
                 fontSize = 16.sp,
                 maxLines = 1,
+                color = if (MaterialTheme.colors.isLight) Color.Black else Color.White,
                 overflow = TextOverflow.Ellipsis,
                 onTextLayout = { textLayoutResult ->
                     if (textLayoutResult.hasVisualOverflow) {
@@ -55,15 +57,25 @@ fun CardItem(card: CardEntity, deleteCard: () -> Unit) {
                     }
                 },
             )
-            IconButton(onClick = { navigator.push(EditCardScreenNav(
-                cardId = card.id,
-                mainSide = card.MainSide,
-                backSide = card.BackSide
-            )) } ) {
-                Icon(imageVector = Icons.Filled.Edit, contentDescription = "edit card")
+            IconButton(onClick = {
+                navigator.push(
+                    EditCardScreenNav(
+                        cardId = card.id,
+                        mainSide = card.MainSide,
+                        backSide = card.BackSide
+                    )
+                )
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.Edit, contentDescription = "edit card",
+                    tint = if (MaterialTheme.colors.isLight) Color.Black else Color.White,
+                )
             }
-            IconButton(onClick = deleteCard ) {
-                Icon(imageVector = Icons.Filled.Delete, contentDescription = "delete card")
+            IconButton(onClick = deleteCard) {
+                Icon(
+                    imageVector = Icons.Filled.Delete, contentDescription = "delete card",
+                    tint = if (MaterialTheme.colors.isLight) Color.Black else Color.White,
+                )
             }
         }
     }

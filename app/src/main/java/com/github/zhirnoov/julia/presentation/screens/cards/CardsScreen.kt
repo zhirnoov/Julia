@@ -66,7 +66,8 @@ fun CardsScreen(
                     modifier = Modifier.weight(1f),
                     text = "Новая карта",
                     fontSize = 18.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    color = if (MaterialTheme.colors.isLight) Color.Black else Color.LightGray
                 )
                 Icon(
                     modifier = Modifier.clickable(onClick = { scope.launch { bottomState.hide() } }),
@@ -88,6 +89,8 @@ fun CardsScreen(
                     .fillMaxWidth(),
                     colors = TextFieldDefaults.textFieldColors(
                         focusedIndicatorColor = Color.Transparent,
+                        textColor = Color.Black,
+                        backgroundColor = Color.LightGray,
                         unfocusedIndicatorColor = Color.Transparent,
                         disabledIndicatorColor = Color.Transparent
                     ),
@@ -103,6 +106,8 @@ fun CardsScreen(
                     .fillMaxWidth(),
                     colors = TextFieldDefaults.textFieldColors(
                         focusedIndicatorColor = Color.Transparent,
+                        textColor = Color.Black,
+                        backgroundColor = Color.LightGray,
                         unfocusedIndicatorColor = Color.Transparent,
                         disabledIndicatorColor = Color.Transparent
                     ),
