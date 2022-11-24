@@ -10,7 +10,6 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,21 +19,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import com.github.zhirnoov.julia.R
 import com.github.zhirnoov.julia.data.alarmManager.AlarmHelper
 import com.github.zhirnoov.julia.data.database.entity.CardEntity
-import com.github.zhirnoov.julia.navigation.screens.CollectionsScreenNav
-import com.github.zhirnoov.julia.navigation.tabs.CollectionsTab
 import com.github.zhirnoov.julia.presentation.components.CardFace
 import com.github.zhirnoov.julia.presentation.components.CardFlip
 import com.github.zhirnoov.julia.presentation.viewmodels.TrainingViewModel
 import com.github.zhirnoov.julia.utlis.RememberWindowInfo
 import com.github.zhirnoov.julia.utlis.StageRepeat
 import com.github.zhirnoov.julia.utlis.WindowInfo
-import java.util.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel, padding: PaddingValues) {
@@ -50,6 +46,7 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel, padding: 
         verticalArrangement = Arrangement.Top
     ) {
         var cardCount by remember { mutableStateOf(0) }
+        val scope = rememberCoroutineScope()
 
         if (cards.size > cardCount) {
             var cardFace by remember {
@@ -124,7 +121,14 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel, padding: 
                                     repeatStage = cards[cardCount].stage_repeat
                                 )
                             )
-                            cardCount++
+                            scope.launch {
+                                cardFace = CardFace.FrontSide
+                                if (cardFace == CardFace.FrontSide) {
+                                    delay(400)
+                                    cardCount++
+                                }
+                            }
+
                         }) { Text(text = "Знаю", color = Color.White) }
 
                     Button(modifier = Modifier.size(width = 120.dp, height = 50.dp),
@@ -143,7 +147,13 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel, padding: 
                                 context,
                                 cards[cardCount].next_repeat_dayOfYear + 1
                             )
-                            cardCount++
+                            scope.launch {
+                                cardFace = CardFace.FrontSide
+                                if (cardFace == CardFace.FrontSide) {
+                                    delay(400)
+                                    cardCount++
+                                }
+                            }
                         }) { Text(text = "Не знаю", color = Color.White) }
                 }
             }
