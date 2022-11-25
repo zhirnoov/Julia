@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.github.zhirnoov.julia.data.database.entity.CardEntity
 import com.github.zhirnoov.julia.domain.UIStateCards
 import com.github.zhirnoov.julia.presentation.screens.LoadingProcess
@@ -192,8 +191,35 @@ fun CardsScreen(
                                 id = collectionId!!,
                                 countCards = cardsCount
                             )
-                        })
+                        }
+                    )
                 }
             })
     }
+}
+
+@Composable
+fun ShowDeleteCardDialogAlert(openDialog: MutableState<Boolean>, deleteCard: () -> Unit) {
+
+    if (openDialog.value) {
+        AlertDialog(onDismissRequest = { openDialog.value = false },
+            title = {
+                Text(text = "Удаление карты")
+            }, text = {
+                Text(text = "Вы хотите удалить карту?")
+            },
+            confirmButton = {
+                Button(onClick = {
+                    openDialog.value = false
+                    deleteCard()
+                }) {
+                    Text(text = "Да")
+                }
+            }, dismissButton = {
+                Button(onClick = { openDialog.value = false }) {
+                    Text(text = "Нет")
+                }
+            })
+    }
+
 }

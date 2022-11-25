@@ -10,7 +10,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,6 +23,7 @@ fun CardItem(card: CardEntity, deleteCard: () -> Unit) {
 
     var badgeCount by remember { mutableStateOf(0) }
     val navigator = LocalNavigator.currentOrThrow
+    val openDialog = remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp),
@@ -36,6 +36,9 @@ fun CardItem(card: CardEntity, deleteCard: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+
+            ShowDeleteCardDialogAlert(openDialog = openDialog, deleteCard = deleteCard)
+
             Text(
                 modifier = Modifier
                     .padding(start = 8.dp)
@@ -71,7 +74,8 @@ fun CardItem(card: CardEntity, deleteCard: () -> Unit) {
                     tint = if (MaterialTheme.colors.isLight) Color.Black else Color.White,
                 )
             }
-            IconButton(onClick = deleteCard) {
+            IconButton(
+                onClick = { openDialog.value = true }) {
                 Icon(
                     imageVector = Icons.Filled.Delete, contentDescription = "delete card",
                     tint = if (MaterialTheme.colors.isLight) Color.Black else Color.White,
