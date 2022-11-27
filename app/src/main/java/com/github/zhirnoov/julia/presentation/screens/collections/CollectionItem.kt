@@ -76,7 +76,7 @@ fun CollectionItem(
         }
         Icon(
             imageVector = Icons.Filled.KeyboardArrowRight,
-            contentDescription = "delete card",
+            contentDescription = "go to cards",
             tint = Color.Gray
         )
 

@@ -1,6 +1,5 @@
 package com.github.zhirnoov.julia.presentation.screens.training
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -46,6 +45,8 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel, padding: 
         verticalArrangement = Arrangement.Top
     ) {
         var cardCount by remember { mutableStateOf(0) }
+        val snackBarNextDaysVisible = remember { mutableStateOf(false) }
+        val countDaysForNextTraining = remember { mutableStateOf(0) }
         val scope = rememberCoroutineScope()
 
         if (cards.size > cardCount) {
@@ -60,7 +61,7 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel, padding: 
             )
             IndicatorProgress(
                 modifier = Modifier.padding(top = 10.dp),
-                progress = (cardCount + 1.toFloat() / cards.size) / 1
+                progress = (cardCount.toFloat() / cards.size.toFloat())
             )
 
             Column(
@@ -101,12 +102,22 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel, padding: 
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
+                    ShowSnackBarNextDaysTraining(
+                        snackBarNextDaysVisible = snackBarNextDaysVisible,
+                        countDays = countDaysForNextTraining
+                    )
+
                     Button(modifier = Modifier.size(width = 120.dp, height = 50.dp),
                         shape = RoundedCornerShape(20.dp),
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color(0xFF03A9F4),
                         ),
                         onClick = {
+                            countDaysForNextTraining.value = StageRepeat().changeDayForNextRepeat(
+                                currentDay = cards[cardCount].next_repeat_dayOfYear,
+                                repeatStage = cards[cardCount].stage_repeat
+                            ) - cards[cardCount].next_repeat_dayOfYear
+                            snackBarNextDaysVisible.value = true
                             viewModel.updateCard(
                                 next_repeatDays = StageRepeat().changeDayForNextRepeat(
                                     currentDay = cards[cardCount].next_repeat_dayOfYear,
@@ -125,6 +136,7 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel, padding: 
                                 cardFace = CardFace.FrontSide
                                 if (cardFace == CardFace.FrontSide) {
                                     delay(400)
+                                    snackBarNextDaysVisible.value = false
                                     cardCount++
                                 }
                             }
@@ -137,6 +149,7 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel, padding: 
                             backgroundColor = Color(0xFFD32F2F),
                         ),
                         onClick = {
+                            snackBarNextDaysVisible.value = true
                             viewModel.updateCard(
                                 next_repeatDays = cards[cardCount].next_repeat_dayOfYear + 1,
                                 id = cards[cardCount].id,
@@ -151,6 +164,7 @@ fun CardsRepeat(cards: List<CardEntity>, viewModel: TrainingViewModel, padding: 
                                 cardFace = CardFace.FrontSide
                                 if (cardFace == CardFace.FrontSide) {
                                     delay(400)
+                                    snackBarNextDaysVisible.value = false
                                     cardCount++
                                 }
                             }

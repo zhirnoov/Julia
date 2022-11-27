@@ -204,9 +204,15 @@ fun ShowDeleteCardDialogAlert(openDialog: MutableState<Boolean>, deleteCard: () 
     if (openDialog.value) {
         AlertDialog(onDismissRequest = { openDialog.value = false },
             title = {
-                Text(text = "Удаление карты")
+                Text(
+                    text = "Удаление карты",
+                    color = if (MaterialTheme.colors.isLight) Color.Black else Color.White
+                )
             }, text = {
-                Text(text = "Вы хотите удалить карту?")
+                Text(
+                    text = "Вы хотите удалить карту?",
+                    color = if (MaterialTheme.colors.isLight) Color.DarkGray else Color.LightGray
+                )
             },
             confirmButton = {
                 Button(onClick = {
