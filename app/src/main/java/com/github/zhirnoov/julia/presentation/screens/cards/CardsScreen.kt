@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -24,15 +25,18 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.github.zhirnoov.julia.data.database.entity.CollectionEntity
+import com.github.zhirnoov.julia.presentation.viewmodels.CollectionViewModel
 import java.util.*
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CardsScreen(
     viewModel: CardViewModel = viewModel(),
+    collectionViewModel: CollectionViewModel = viewModel(),
     collectionName: String?,
     collectionId: String?,
-    cardsCount: Int?
+    collectionCardsCount: Int?
 ) {
 
 
@@ -43,11 +47,28 @@ fun CardsScreen(
 
     val bottomState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
+    val deleteCollectionDialogVisibility = remember { mutableStateOf(false) }
     var cardMainSide by remember { mutableStateOf("") }
     var cardBackSide by remember { mutableStateOf("") }
-    var cardsCount by rememberSaveable { mutableStateOf(cardsCount!!) }
+    var cardsCount by rememberSaveable { mutableStateOf(collectionCardsCount!!) }
     var buttonIsEnabled by remember { mutableStateOf(false) }
     val navigator = LocalNavigator.currentOrThrow
+
+
+    val collection = CollectionEntity(
+        id = collectionId!!,
+        name = collectionName!!,
+        countCards = collectionCardsCount!!
+    )
+    ShowDeleteCollectionDialog(
+        openDialog = deleteCollectionDialogVisibility,
+        collectionName = collectionName,
+        deleteCollection = {
+            collectionViewModel.deleteCollection(collection)
+            viewModel.deleteCardsByCollectionId(collectionId = collectionId)
+            navigator.pop()
+        }
+    )
 
     ModalBottomSheetLayout(sheetState = bottomState,
         sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
@@ -130,7 +151,7 @@ fun CardsScreen(
                         val calendar = Calendar.getInstance()
                         viewModel.saveCard(
                             card = CardEntity(
-                                collectionId = collectionId!!,
+                                collectionId = collectionId,
                                 MainSide = cardMainSide,
                                 BackSide = cardBackSide,
                                 stage_repeat = 1,
@@ -139,8 +160,7 @@ fun CardsScreen(
                         )
                         cardsCount += 1
                         viewModel.updateCountCardsInCollection(
-                            id = collectionId,
-                            countCards = cardsCount
+                            id = collectionId, countCards = cardsCount
                         )
                         scope.launch {
                             bottomState.hide()
@@ -153,7 +173,7 @@ fun CardsScreen(
         }) {
         Scaffold(topBar = {
             TopAppBar(backgroundColor = Color(0xFF0277BD),
-                title = { Text(text = collectionName!!, color = Color.White) },
+                title = { Text(text = collectionName, color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = { navigator.pop() }) {
                         Icon(
@@ -162,37 +182,48 @@ fun CardsScreen(
                             tint = Color.White
                         )
                     }
-                })
-        }, floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    scope.launch {
-                        bottomState.show()
+                },
+                actions = {
+                    IconButton(onClick = {
+                        deleteCollectionDialogVisibility.value = true
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            tint = Color.White,
+                            contentDescription = "Delete collection"
+                        )
                     }
-                }, shape = RoundedCornerShape(50), backgroundColor = Color(0xFF03A9F4),
-                contentColor = Color.White
-            ) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = "fab button")
-            }
+                })
         },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = {
+                        scope.launch {
+                            bottomState.show()
+                        }
+                    },
+                    shape = RoundedCornerShape(50),
+                    backgroundColor = Color(0xFF03A9F4),
+                    contentColor = Color.White
+                ) {
+                    Icon(imageVector = Icons.Filled.Add, contentDescription = "fab button")
+                }
+            },
             floatingActionButtonPosition = FabPosition.Center,
             isFloatingActionButtonDocked = false,
             content = { padding ->
                 when (state.value) {
                     is UIStateCards.Loading -> LoadingProcess()
                     is UIStateCards.Error -> EmptyCardsMessage()
-                    is UIStateCards.Success -> AllCards(
-                        padding = padding,
+                    is UIStateCards.Success -> AllCards(padding = padding,
                         cards = (state.value as UIStateCards.Success).cards,
                         deleteCard = { card ->
                             viewModel.deleteCard(card)
                             cardsCount -= 1
                             viewModel.updateCountCardsInCollection(
-                                id = collectionId!!,
-                                countCards = cardsCount
+                                id = collectionId, countCards = cardsCount
                             )
-                        }
-                    )
+                        })
                 }
             })
     }
@@ -202,30 +233,28 @@ fun CardsScreen(
 fun ShowDeleteCardDialogAlert(openDialog: MutableState<Boolean>, deleteCard: () -> Unit) {
 
     if (openDialog.value) {
-        AlertDialog(onDismissRequest = { openDialog.value = false },
-            title = {
-                Text(
-                    text = "Удаление карты",
-                    color = if (MaterialTheme.colors.isLight) Color.Black else Color.White
-                )
-            }, text = {
-                Text(
-                    text = "Вы хотите удалить карту?",
-                    color = if (MaterialTheme.colors.isLight) Color.DarkGray else Color.LightGray
-                )
-            },
-            confirmButton = {
-                Button(onClick = {
-                    openDialog.value = false
-                    deleteCard()
-                }) {
-                    Text(text = "Да")
-                }
-            }, dismissButton = {
-                Button(onClick = { openDialog.value = false }) {
-                    Text(text = "Нет")
-                }
-            })
+        AlertDialog(onDismissRequest = { openDialog.value = false }, title = {
+            Text(
+                text = "Удаление карты",
+                color = if (MaterialTheme.colors.isLight) Color.Black else Color.White
+            )
+        }, text = {
+            Text(
+                text = "Вы хотите удалить карту?",
+                color = if (MaterialTheme.colors.isLight) Color.DarkGray else Color.LightGray
+            )
+        }, confirmButton = {
+            Button(onClick = {
+                openDialog.value = false
+                deleteCard()
+            }) {
+                Text(text = "Да")
+            }
+        }, dismissButton = {
+            Button(onClick = { openDialog.value = false }) {
+                Text(text = "Нет")
+            }
+        })
     }
 
 }

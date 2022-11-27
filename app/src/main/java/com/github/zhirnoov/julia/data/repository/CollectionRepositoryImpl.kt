@@ -19,9 +19,9 @@ class CollectionRepositoryImpl(private val collectionLocalDataSource: Collection
             collectionLocalDataSource.getAllCollection()
         }
 
-    override suspend fun deleteCollection(collection: CollectionEntity) {
+    override suspend fun deleteCollection(collection : CollectionEntity) {
         withContext(Dispatchers.IO) {
-            collectionLocalDataSource.deleteCollection(collection)
+            collectionLocalDataSource.deleteCollection(collection = collection)
         }
     }
 

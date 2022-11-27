@@ -33,4 +33,8 @@ class CardLocalDataSource @Inject constructor(private val cardDao: CardDao) {
         cardDao.editCard(mainSide = mainSide, backSide = backSide, id = id)
     }
 
+    suspend fun deleteCardByCollectionId(collectionId: String) {
+        cardDao.deleteCardsByCollectionId(collectionId = collectionId)
+    }
+
 }

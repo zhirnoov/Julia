@@ -8,7 +8,7 @@ data class CardsInCollectionScreenNav(val collectionName : String, val collectio
 
     @Composable
     override fun Content() {
-        CardsScreen(collectionName = collectionName , collectionId =  collectionId, cardsCount = cardsCount)
+        CardsScreen(collectionName = collectionName , collectionId =  collectionId, collectionCardsCount = cardsCount)
     }
 
 }

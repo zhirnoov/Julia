@@ -6,6 +6,6 @@ import javax.inject.Inject
 
 class DeleteCollectionUseCase @Inject constructor(private val collectionRepository: CollectionRepository) {
 
-    suspend fun execute(collection: CollectionEntity) =
-        collectionRepository.deleteCollection(collection)
+    suspend fun execute(collection : CollectionEntity) =
+        collectionRepository.deleteCollection(collection = collection)
 }

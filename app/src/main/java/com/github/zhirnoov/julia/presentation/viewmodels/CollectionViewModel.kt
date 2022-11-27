@@ -1,9 +1,6 @@
 package com.github.zhirnoov.julia.presentation.viewmodels
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.zhirnoov.julia.data.database.entity.CollectionEntity
@@ -11,9 +8,7 @@ import com.github.zhirnoov.julia.domain.UIState
 import com.github.zhirnoov.julia.domain.usecases.collection.AddCollectionUseCase
 import com.github.zhirnoov.julia.domain.usecases.collection.DeleteCollectionUseCase
 import com.github.zhirnoov.julia.domain.usecases.collection.GetAllCollectionsUseCase
-import com.github.zhirnoov.julia.domain.usecases.collection.GetCardCountInCollectionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -53,9 +48,9 @@ class CollectionViewModel @Inject constructor(
     }
 
 
-    fun deleteCollection(collection: CollectionEntity) = viewModelScope.launch {
+    fun deleteCollection(collection : CollectionEntity) = viewModelScope.launch {
         collections.remove(collection)
-        deleteCollectionUseCase.execute(collection)
+        deleteCollectionUseCase.execute(collection = collection)
         if (collections.isEmpty()) {
             _uiState.value = UIState.Error
         }

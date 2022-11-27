@@ -47,4 +47,8 @@ class CardRepositoryImpl(private val cardLocalDataSource: CardLocalDataSource) :
             cardLocalDataSource.getCardsCountInCollection(collectionId = collectionId)
         }
 
-}
+    override suspend fun deleteCardsByCollectionId(collectionId: String) =
+        withContext(Dispatchers.IO) {
+            cardLocalDataSource.deleteCardByCollectionId(collectionId = collectionId)
+        }
+    }

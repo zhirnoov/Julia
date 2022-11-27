@@ -4,11 +4,10 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.zhirnoov.julia.data.database.entity.CardEntity
+import com.github.zhirnoov.julia.data.database.entity.CollectionEntity
 import com.github.zhirnoov.julia.domain.UIStateCards
-import com.github.zhirnoov.julia.domain.usecases.DeleteCardUseCase
-import com.github.zhirnoov.julia.domain.usecases.EditCardUseCase
-import com.github.zhirnoov.julia.domain.usecases.GetCardsUseCase
-import com.github.zhirnoov.julia.domain.usecases.SaveCardUseCase
+import com.github.zhirnoov.julia.domain.usecases.*
+import com.github.zhirnoov.julia.domain.usecases.collection.DeleteCollectionUseCase
 import com.github.zhirnoov.julia.domain.usecases.collection.UpdateCountCardInCollectionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -21,7 +20,8 @@ class CardViewModel @Inject constructor(
     private val getCardsUseCase: GetCardsUseCase,
     private val deleteCardUseCase: DeleteCardUseCase,
     private val updateCountCardInCollectionUseCase: UpdateCountCardInCollectionUseCase,
-    private val editCardUseCase: EditCardUseCase
+    private val editCardUseCase: EditCardUseCase,
+    private val deleteCardsByCollectionIdUseCase: DeleteCardsByCollectionIdUseCase,
 ) : ViewModel() {
 
     var cards = mutableStateListOf<CardEntity>()
@@ -66,6 +66,13 @@ class CardViewModel @Inject constructor(
     fun editCard(mainSide : String, backSide : String, id : String) {
         viewModelScope.launch {
             editCardUseCase.execute(mainSide = mainSide, backSide = backSide, id = id)
+        }
+    }
+
+    fun deleteCardsByCollectionId(collectionId: String) {
+        viewModelScope.launch {
+            deleteCardsByCollectionIdUseCase.execute(collectionId = collectionId)
+            cards.clear()
         }
     }
 }

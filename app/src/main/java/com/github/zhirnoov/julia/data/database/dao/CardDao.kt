@@ -23,6 +23,9 @@ interface CardDao {
     @Delete
     suspend fun deleteCard(cardEntity: CardEntity)
 
+    @Query("DELETE FROM cards where collectionId =:collectionId")
+    suspend fun deleteCardsByCollectionId(collectionId: String) : Int
+
     @Query("UPDATE cards SET MainSide =:mainSide, BackSide =:backSide WHERE id=:id")
     suspend fun editCard(mainSide : String, backSide : String, id: String)
 

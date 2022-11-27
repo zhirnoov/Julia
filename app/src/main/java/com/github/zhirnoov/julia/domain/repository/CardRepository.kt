@@ -18,4 +18,6 @@ interface CardRepository {
     suspend fun editCard(mainSide : String, backSide : String, id : String)
 
     suspend fun getCardCountInCollection(collectionId : String) : Int
+
+    suspend fun deleteCardsByCollectionId(collectionId: String)
 }

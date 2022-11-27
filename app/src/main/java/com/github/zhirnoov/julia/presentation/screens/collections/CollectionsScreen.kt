@@ -31,7 +31,7 @@ fun CollectionsScreen(
     viewModel: CollectionViewModel = viewModel()
 ) {
 
-    LaunchedEffect(Unit) {
+   LaunchedEffect(Unit) {
         viewModel.getAllCollections()
     }
 

@@ -12,8 +12,8 @@ class CollectionLocalDataSource @Inject constructor(private val collectionDao: C
 
     fun getAllCollection() = collectionDao.getAllCollections()
 
-    suspend fun deleteCollection(collection: CollectionEntity) {
-        collectionDao.deleteCollection(collection)
+    suspend fun deleteCollection(collection : CollectionEntity) {
+        collectionDao.deleteCollection(collection = collection)
     }
 
     suspend fun updateCollection(countCards : Int, id : String) {
